@@ -47,6 +47,7 @@ const weaponList = [
   "tec-9",
   "cz75-auto",
   "dual berettas",
+  "zeus x27",
 
   // Knives
   "knife",
