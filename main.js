@@ -1,5 +1,3 @@
-let lastCount = 0;
-
 // Weapon list for CS2
 const weaponList = [
   // Rifles
@@ -149,28 +147,23 @@ function addLookButton(item) {
   item.appendChild(btn);
 }
 
-function getGoodsItems() {
+function addLookButtons() {
   const items = document.querySelectorAll(".goods-item");
-  let matchingItems = [];
-  if (items.length !== lastCount && items.length > 0) {
-    matchingItems = Array.from(items).filter((item) => {
-      const link = item.querySelector('a[href^="/market/goods/"]');
-      return !!link;
-    });
-    lastCount = items.length;
+  const matchingItems = Array.from(items).filter((item) => {
+    const link = item.querySelector('a[href^="/market/goods/"]');
+    return !!link;
+  });
 
-    // Add Look button to each matching item
-    matchingItems.forEach(addLookButton);
-  }
-  return matchingItems;
+  // Always try to add the button to each matching item
+  matchingItems.forEach(addLookButton);
 }
 
 // Run once immediately
-getGoodsItems();
+addLookButtons();
 
 // Observe for dynamically added goods-item elements
 const observer = new MutationObserver(() => {
-  getGoodsItems();
+  addLookButtons();
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
