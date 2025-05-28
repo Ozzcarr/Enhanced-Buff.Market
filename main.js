@@ -57,7 +57,10 @@ const weaponList = [
 const skipKeywords = ["sticker", "charm", "music kit", "graffiti", "patch", "pin", "pass", "name tag", "swap tool"];
 
 function shouldSkip(lowerName) {
-  return skipKeywords.some((keyword) => lowerName.includes(keyword));
+  return skipKeywords.some((keyword) => {
+    const regex = new RegExp(`\\b${keyword}\\b`, "i");
+    return regex.test(lowerName);
+  });
 }
 
 function detectType(lowerName) {
