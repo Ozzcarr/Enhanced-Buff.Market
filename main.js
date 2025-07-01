@@ -1,69 +1,13 @@
-// Weapon list for CS2
-const weaponList = [
-  // Rifles
-  "ak-47",
-  "m4a4",
-  "m4a1-s",
-  "famas",
-  "galil ar",
-  "aug",
-  "sg 553",
-
-  // Sniper Rifles
-  "awp",
-  "ssg 08",
-  "scar-20",
-  "g3sg1",
-
-  // SMGs
-  "mac-10",
-  "mp9",
-  "mp7",
-  "mp5-sd",
-  "ump-45",
-  "p90",
-  "bizon",
-
-  // Shotguns
-  "mag-7",
-  "nova",
-  "xm1014",
-  "sawed-off",
-
-  // Machine Guns
-  "m249",
-  "negev",
-
-  // Pistols
-  "usp-s",
-  "glock-18",
-  "p250",
-  "p2000",
-  "deagle",
-  "r8 revolver",
-  "five-seven",
-  "tec-9",
-  "cz75-auto",
-  "dual berettas",
-  "zeus x27",
-
-  // Knives
-  "knife",
-  "bayonet",
-  "karambit",
-  "shadow daggers",
-];
-
 const skipKeywords = ["sticker", "charm", "music kit", "graffiti", "patch", "pin", "pass", "name tag", "swap tool"];
 
-function shouldSkip(lowerName) {
+function shouldSkipItem(lowerName) {
   return skipKeywords.some((keyword) => {
     const regex = new RegExp(`\\b${keyword}\\b`, "i");
     return regex.test(lowerName);
   });
 }
 
-function detectType(lowerName) {
+function detectItemType(lowerName) {
   if (lowerName.includes("gloves") || lowerName.includes("wraps")) return "glove";
   for (const weapon of weaponList) {
     if (lowerName.includes(weapon)) return "skin";
@@ -71,7 +15,7 @@ function detectType(lowerName) {
   return "agent";
 }
 
-function formatItemLink(itemName) {
+function createItemSlug(itemName) {
   return itemName
     .toLowerCase()
     .replace(/\s*\|\s*/g, " ")
@@ -80,7 +24,7 @@ function formatItemLink(itemName) {
     .trim();
 }
 
-function getWearSuffix(tagsDiv) {
+function getItemWearSuffix(tagsDiv) {
   if (!tagsDiv) return "";
   const spans = tagsDiv.querySelectorAll("span");
   if (spans.length === 0) return "";
@@ -109,7 +53,7 @@ function getWearSuffix(tagsDiv) {
   return "";
 }
 
-function addLookButton(item) {
+function insertLookButton(item) {
   if (item.querySelector(".buff-look-btn")) return;
 
   const nameElem = item.querySelector("h3");
@@ -118,11 +62,11 @@ function addLookButton(item) {
   const itemName = nameElem.textContent?.trim() || "";
   const lowerName = itemName.toLowerCase();
 
-  if (shouldSkip(lowerName)) return;
+  if (shouldSkipItem(lowerName)) return;
 
-  const type = detectType(lowerName);
-  const itemLink = formatItemLink(itemName);
-  const wearSuffix = getWearSuffix(item.querySelector(".goods-card-tags"));
+  const type = detectItemType(lowerName);
+  const itemLink = createItemSlug(itemName);
+  const wearSuffix = getItemWearSuffix(item.querySelector(".goods-card-tags"));
 
   const targetUrl = `https://pricempire.com/cs2-items/${type}/${encodeURIComponent(itemLink)}${wearSuffix}`;
 
@@ -132,25 +76,11 @@ function addLookButton(item) {
   btn.href = targetUrl;
   btn.target = "_blank";
   btn.rel = "noopener noreferrer";
-  btn.style.position = "absolute";
-  btn.style.top = "8px";
-  btn.style.right = "8px";
-  btn.style.zIndex = "10";
-  btn.style.padding = "4px 10px";
-  btn.style.background = "#1976d2";
-  btn.style.color = "#fff";
-  btn.style.border = "none";
-  btn.style.borderRadius = "4px";
-  btn.style.cursor = "pointer";
-  btn.style.fontSize = "12px";
-  btn.style.textDecoration = "none";
-  btn.style.display = "inline-block";
-  btn.style.textAlign = "center";
   item.style.position = item.style.position || "relative";
   item.appendChild(btn);
 }
 
-function addLookButtons() {
+function insertLookButtonsForAllItems() {
   const items = document.querySelectorAll(".goods-item");
   const matchingItems = Array.from(items).filter((item) => {
     const link = item.querySelector('a[href^="/market/goods/"]');
@@ -158,15 +88,15 @@ function addLookButtons() {
   });
 
   // Always try to add the button to each matching item
-  matchingItems.forEach(addLookButton);
+  matchingItems.forEach(insertLookButton);
 }
 
 // Run once immediately
-addLookButtons();
+insertLookButtonsForAllItems();
 
 // Observe for dynamically added goods-item elements
 const observer = new MutationObserver(() => {
-  addLookButtons();
+  insertLookButtonsForAllItems();
 });
 
 observer.observe(document.body, { childList: true, subtree: true });

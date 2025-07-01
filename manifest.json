@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["*://buff.market/*", "*://www.buff.market/*"],
-      "js": ["main.js"]
+      "js": ["weaponList.js", "main.js"],
+      "css": ["style.css"]
     }
   ]
 }
